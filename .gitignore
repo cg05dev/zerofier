@@ -1,0 +1,13 @@
+dist-newstyle/
+cabal.project.local*
+.ghc.environment.*
+*.hi
+*.o
+*.prof
+*.hp
+*.eventlog
+.hie/
+
+# Personal Claude Code files
+CLAUDE.local.md
+.claude/settings.local.json

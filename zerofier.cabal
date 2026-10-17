@@ -1,0 +1,52 @@
+cabal-version:   3.0
+name:            zerofier
+version:         0.1.0.0
+synopsis:        A small post-quantum private blockchain with a from-scratch STARK
+license:         MIT
+license-file:    LICENSE
+author:          Christian
+build-type:      Simple
+extra-doc-files: docs/BUILD_GUIDE.md
+
+common shared
+  default-language:   GHC2021
+  default-extensions: DataKinds DerivingStrategies OverloadedStrings
+  ghc-options:        -Wall -O2
+  build-depends:      base >=4.18 && <5, bytestring, vector, containers, mtl
+
+library
+  import:          shared
+  hs-source-dirs:  src
+  build-depends:   crypton, memory, binary, stm, unordered-containers
+  exposed-modules: Zerofier.Field.Class
+                   Zerofier.Field.Prime128
+                   -- add each module as you write it
+
+executable zerofier-node
+  import:         shared
+  hs-source-dirs: app/node
+  main-is:        Main.hs
+  ghc-options:    -threaded -rtsopts
+  build-depends:  zerofier, network, async, optparse-applicative
+
+executable zerofier-wallet
+  import:         shared
+  hs-source-dirs: app/wallet
+  main-is:        Main.hs
+  build-depends:  zerofier, optparse-applicative
+
+test-suite spec
+  import:         shared
+  type:           exitcode-stdio-1.0
+  hs-source-dirs: test
+  main-is:        Main.hs
+  other-modules:  Zerofier.Field.Prime128Spec
+  ghc-options:    -threaded -rtsopts
+  build-depends:  zerofier, tasty, tasty-quickcheck, tasty-hunit, QuickCheck
+
+benchmark bench
+  import:         shared
+  type:           exitcode-stdio-1.0
+  hs-source-dirs: bench
+  main-is:        Main.hs
+  build-depends:  zerofier, tasty-bench
