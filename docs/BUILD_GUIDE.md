@@ -260,14 +260,14 @@ Then add a class for what a STARK needs beyond arithmetic:
 
 ```haskell
 class (Eq a, Show a, Fractional a) => StarkField a where
-  generator   :: a                    -- generates the whole multiplicative group
-  twoAdicity  :: Int                  -- 119 for F: p - 1 = 407 * 2^119
-  rootOfUnity :: Int -> a             -- primitive 2^k-th root: generator ^ ((p-1) / 2^k)
-  toBytes     :: a -> ByteString      -- for hashing and the transcript
-  fromBytes   :: ByteString -> a      -- turn hash output into a challenge
+  generator   :: a                    -- the tutorial's value; order 2^119 (not p - 1)
+  twoAdicity  :: Int                  -- 119 for F: p - 1 = 407 * 2^119 (needs AllowAmbiguousTypes)
+  rootOfUnity :: Int -> a             -- primitive 2^k-th root: generator ^ (2^(119-k))
+  toBytes     :: a -> ByteString      -- canonical: 16 bytes, little-endian
+  fromBytes   :: ByteString -> Maybe a  -- Nothing on wrong length or value >= p
 ```
 
-Take the generator from the tutorial's code rather than computing one yourself.
+Take the generator from the tutorial's code rather than computing one yourself. Note that it generates the order-2^119 subgroup, not the whole multiplicative group (3 does that); roots of unity and the FRI coset offset only need the 2-power subgroup. Turning hash output into a challenge is a separate function (reduce 32 bytes mod p) that belongs in Phase 3.
 
 ### Haskell skills
 
@@ -278,9 +278,9 @@ Take the generator from the tutorial's code rather than computing one yourself.
 
 ### Done when
 
-- [ ] Properties pass with 10,000 cases each: associativity, commutativity, distributivity, identities, `a * recip a == 1` for nonzero `a`, and `a ^ (p - 1) == 1`.
-- [ ] `rootOfUnity k ^ (2^k) == 1` and `rootOfUnity k ^ (2^(k-1)) /= 1` for several k.
-- [ ] `fromInteger (-1) == p - 1` and `fromBytes . toBytes == id`.
+- [x] Properties pass with 10,000 cases each: associativity, commutativity, distributivity, identities, `a * recip a == 1` for nonzero `a`, and `a ^ (p - 1) == 1`.
+- [x] `rootOfUnity k ^ (2^k) == 1` and `rootOfUnity k ^ (2^(k-1)) /= 1` for several k.
+- [x] `fromInteger (-1) == p - 1` and `fromBytes . toBytes == Just`.
 
 ### Pitfalls
 

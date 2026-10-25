@@ -41,6 +41,7 @@ test-suite spec
   hs-source-dirs: test
   main-is:        Main.hs
   other-modules:  Zerofier.Field.Prime128Spec
+                  Zerofier.Gen
   ghc-options:    -threaded -rtsopts
   build-depends:  zerofier, tasty, tasty-quickcheck, tasty-hunit, QuickCheck
 

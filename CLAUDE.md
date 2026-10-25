@@ -54,8 +54,11 @@ app/node/Main.hs  app/wallet/Main.hs  test/  bench/  docs/
 
 **Field**
 - `newtype Fp (p :: Nat) = Fp Natural` with `KnownNat`, plus `Num` and `Fractional` instances.
-- Main field: `F = Fp 270497897142230380135924736767050121217`, which is p = 1 + 407·2^119, the field from *Anatomy of a STARK*. Take the generator from the tutorial's code.
+- Main field: `F = Fp 270497897142230380135924736767050121217`, which is p = 1 + 407·2^119, the field from *Anatomy of a STARK*.
+- `generator` is the tutorial's 85408008396924667383611388730472331217. Its order is **2^119, not p − 1** (3 generates the whole group). `rootOfUnity k = generator^(2^(119−k))`, and it is also the FRI coset offset.
 - `class StarkField` adds `generator`, `twoAdicity` (119), `rootOfUnity k`, `toBytes`, and `fromBytes`.
+- Encoding: 16 bytes, little-endian. `fromBytes :: ByteString -> Maybe a` rejects the wrong length and values ≥ p (never reduces). Hash-to-field sampling is separate: reduce 32 bytes mod p (Phase 3).
+- `recip 0` is an `error`. Inverse is by Fermat; batch inversion comes in Phase 5.
 - Goldilocks (2^64 − 2^32 + 1) plus the quadratic extension X² − 7 is a **Phase 9 performance upgrade only**.
 
 **Polynomials**
@@ -126,7 +129,7 @@ Update this table as phases finish.
 
 | Phase | Topic | Status |
 | --- | --- | --- |
-| 1 | Finite fields | In progress (setup done) |
+| 1 | Finite fields | Done (`v0.1-fields`) |
 | 2 | Polynomials, NTT | Not started |
 | 3 | Merkle, transcript | Not started |
 | 4 | FRI | Not started |
